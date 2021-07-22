@@ -5,8 +5,6 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(.)
 
-set(GUROBI_HOME "/home/serge/Soft/Gurobi/gurobi912/linux64")
-
 add_executable(Times-And-Planes-Optimization-2021-07
         main.cpp
 
@@ -34,8 +32,6 @@ add_executable(Times-And-Planes-Optimization-2021-07
         "Optimization program/Build/Trajectories.cpp"
         )
 
-message("Gurobi: '${GUROBI_HOME}'")
-
-target_include_directories(Times-And-Planes-Optimization-2021-07 PUBLIC "${GUROBI_HOME}/include")
-target_link_directories(Times-And-Planes-Optimization-2021-07 PUBLIC "${GUROBI_HOME}/lib")
+target_include_directories(Times-And-Planes-Optimization-2021-07 PUBLIC "$ENV{GUROBI_HOME}/include")
+target_link_directories(Times-And-Planes-Optimization-2021-07 PUBLIC "$ENV{GUROBI_HOME}/lib")
 target_link_libraries(Times-And-Planes-Optimization-2021-07 gurobi_c++ gurobi91)
