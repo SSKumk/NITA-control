@@ -15,12 +15,6 @@ int main()
     build_Flow(path_to_CPointsFile, path_to_SchemesFile, 0);
     print_schemes_flow();
     
-    
-    
-    
-    
-    
-    
     flow;
     return 0;
 }
