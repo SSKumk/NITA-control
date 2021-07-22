@@ -5,6 +5,8 @@
 #include "Trajectories.h"
 #include "Optimization program/Flow.h"
 
+#include "gurobi_c++.h"
+
 using namespace std;
 
 BestTrajectory::BestTrajectory(string _P0, double _t0, double _v0, double _tf) :

@@ -5,20 +5,37 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(.)
 
+set(GUROBI_HOME "/home/serge/Soft/Gurobi/gurobi912/linux64")
+
 add_executable(Times-And-Planes-Optimization-2021-07
         main.cpp
 
-        "Optimization program/Flow.cpp" "Optimization program/Flow.h" "Optimization program/Fields of Zone/Fields of Flow.h"
-        "Optimization program/Measure units/Measure units.h" "Optimization program/Measure units/Measure units.cpp"
+        "Optimization program/Flow.cpp"
+        "Optimization program/Flow.h"
 
+        "Optimization program/Measure units/Measure units.cpp"
+        "Optimization program/Measure units/Measure units.h"
 
-        "Optimization program/Read/Read.cpp" "Optimization program/Read/Read.h" "Optimization program/Errors/Errors.h"
-        "Optimization program/Build/Build.cpp" "Optimization program/Build/Build.h"
+        "Optimization program/Read/Read.cpp"
+        "Optimization program/Read/Read.h"
+
+        "Optimization program/Errors/Errors.h"
+
+        "Optimization program/Build/Build.cpp"
+        "Optimization program/Build/Build.h"
+
         "Optimization program/Fields of Zone/Fields of Flow.cpp"
-        "Optimization program/Flow.cpp")
+        "Optimization program/Fields of Zone/Fields of Flow.h"
 
+        "Optimization program/Tools/Tools.cpp"
+        "Optimization program/Tools/Tools.h"
 
-target_include_directories(Times-And-Planes-Optimization-2021-07 PRIVATE "/home/serge/Libraries/Gurobi/include")
-target_link_directories(Times-And-Planes-Optimization-2021-07 PRIVATE "/home/serge/Libraries/Gurobi/lib")
-target_link_libraries(Times-And-Planes-Optimization-2021-07 gurobi_c++)
-target_link_libraries(Times-And-Planes-Optimization-2021-07 gurobi91)
+        "Optimization program/Build/Trajectories.h"
+        "Optimization program/Build/Trajectories.cpp"
+        )
+
+message("Gurobi: '${GUROBI_HOME}'")
+
+target_include_directories(Times-And-Planes-Optimization-2021-07 PUBLIC "${GUROBI_HOME}/include")
+target_link_directories(Times-And-Planes-Optimization-2021-07 PUBLIC "${GUROBI_HOME}/lib")
+target_link_libraries(Times-And-Planes-Optimization-2021-07 gurobi_c++ gurobi91)
