@@ -19,6 +19,8 @@ BestTrajectory::BestTrajectory(string _P0, double _t0, double _v0, double _tf) :
 }
 
 void BestTrajectory::dfs(int curPointID) {
-
+  if (curPointID == flow.final_point) {
+    // We have reached the final point
+  }
 }
 
