@@ -31,7 +31,7 @@ struct Scheme
 {
     int ID{-1};
     int startP{-1};
-    int endP{-1};
+    std::vector<int> endPs{};
     
     std::string type{""}; //Тип схемы: HA - Зона Ожидания, L - линейная, F - веер, T - полутромбон, S - спрямление
     
@@ -43,11 +43,5 @@ struct Scheme
     Time t_min{0};// Для ЗО
     Time t_max{0};
 };
-
-struct HoldingArea
-{
-    int ID{-1};
-};
-
 
 #endif //TIMES_AND_PLANES_OPTIMIZATION_2021_07_FIELDS_OF_FLOW_H

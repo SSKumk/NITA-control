@@ -130,11 +130,12 @@ void fill_scheme_field(sub_match<const char *> str, vector<int> &field) {
 //Пройтись по всем точкам схемы и запонить, что эти точки относятся к этой схеме
 void cpScheme(Scheme &scheme) {
   if (scheme.type == "L") {
-    for (const auto pointID : scheme.lin) {
+    for (const int pointID : scheme.lin) {
       flow.checkPoints.at(pointID).schemesID.insert(scheme.ID);
     }
-  }
-  if (scheme.type == "S") {
+  } else if (scheme.type == "HA") {
+    flow.checkPoints.at(scheme.startP).schemesID.insert(scheme.ID);
+  } else {
     for (const auto pointID : scheme.stFrom) {
       flow.checkPoints.at(pointID).schemesID.insert(scheme.ID);
     }
@@ -199,29 +200,24 @@ void read_schemes(string_view path) {
         scheme.type = "L";
         fill_scheme_field(res[1], scheme.lin);
         scheme.startP = scheme.lin.front();
-        scheme.endP = scheme.lin.back();
-        flow.starts[scheme.startP].push_back(scheme.ID);
-        cpScheme(scheme);
+        scheme.endPs.push_back(scheme.lin.back());
       }
       //Обработка схемы ЗО
       else if (regex_match(line.c_str(), res, regHA)) {
         try {
           scheme.startP = flow.cpName2cpID.at(res[1]);
-          scheme.endP = flow.cpName2cpID.at(res[1]);
+          scheme.endPs.push_back(flow.cpName2cpID.at(res[1]));
         }
         catch (const std::out_of_range &ex) {
           throw std::runtime_error(res[1]);
         }
         scheme.type = "HA";
-
         flow.HAs.insert({scheme.startP, scheme.ID});
-
-        auto t_minMU = string(res[3]);
-        auto t_min = stod(string(res[2]));
+        string t_minMU = string(res[3]);
+        double t_min = stod(string(res[2]));
         scheme.t_min = {t_min, t_minMU};
-
-        auto t_maxMU = string(res[5]);
-        auto t_max = stod(string(res[4]));
+        string t_maxMU = string(res[5]);
+        double t_max = stod(string(res[4]));
         scheme.t_max = {t_max, t_maxMU};
       }
       //Обработка схемы типа спрямления
@@ -231,15 +227,21 @@ void read_schemes(string_view path) {
         fill_scheme_field(res[2], scheme.stFrom);
         fill_scheme_field(res[3], scheme.stTo);
         scheme.startP = scheme.stFrom.front();
-        scheme.endP = scheme.stFrom.back();
-        cpScheme(scheme);
-        flow.starts[scheme.startP].push_back(scheme.ID);
+        copy(scheme.stTo.begin(), scheme.stTo.end(), back_inserter(scheme.endPs));
+
+        if (find(scheme.stTo.begin(), scheme.stTo.end(), scheme.stFrom.back()) == scheme.stTo.end()) {
+          scheme.endPs.push_back(scheme.stFrom.back());
+        }
       }
       else {
         cerr << "Warning! Line '" << lineNum << "' in " << path << " doesn't match any scheme format" << endl;
         exit(FILE_NOT_ALLOWED_FORMAT);
       }
 
+      if (scheme.type != "HA") {
+        flow.starts[scheme.startP].push_back(scheme.ID);
+      }
+      cpScheme(scheme);
       flow.schemes.push_back(scheme);
     }
     catch (const out_of_range &ex) //Ловим ошибку о не обнаружении точки среди точек из checkPoints

@@ -22,8 +22,6 @@ struct Flow
     std::map<int, int> HAs{};
     std::map<int, std::vector<int>> starts{};
     
-    std::map<int, int> scheme_path{};
-    
     int final_point{-1};
     
     static Flow &get_instance();

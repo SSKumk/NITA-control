@@ -8,9 +8,8 @@
 
 using namespace std;
 
-void build_Flow(string_view path_PointsFile, string_view path_SchemesFile, int start_point)
-{
-    read_checkPoints(path_PointsFile);
-    read_schemes(path_SchemesFile);
+void build_Flow(string_view path_PointsFile, string_view path_SchemesFile, int start_point) {
+  read_checkPoints(path_PointsFile);
+  read_schemes(path_SchemesFile);
 }
 
