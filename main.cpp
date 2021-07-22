@@ -8,7 +8,6 @@ using namespace std;
 
 int main()
 {
-    
     string path_to_CPointsFile = "../Optimization program/Source information/Points/Test.txt";
     string path_to_SchemesFile = "../Optimization program/Source information/Schemes/Test.txt";
     
