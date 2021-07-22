@@ -1,0 +1,11 @@
+P0 P1
+P1: 4min 30min
+P1 P2
+[T]StrFrom(P2 P3 P4 P5)StrTo(P5)
+P5 P6
+[S]StrFrom(P6 P7)StrTo(P10 P11)
+[S]StrFrom(P7 P8) StrTo(P10 P11)
+P8 P9 P10
+P10 P11
+[F]StrFrom(P11 P12 P13 P14) StrTo(P15)
+P15 P16
