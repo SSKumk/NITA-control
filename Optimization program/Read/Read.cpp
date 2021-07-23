@@ -129,11 +129,11 @@ void fill_scheme_field(sub_match<const char *> str, vector<int> &field) {
 
 //Пройтись по всем точкам схемы и запонить, что эти точки относятся к этой схеме
 void cpScheme(Scheme &scheme) {
-  if (scheme.type == "L") {
+  if (scheme.type == LINEAR) {
     for (const int pointID : scheme.lin) {
       flow.checkPoints.at(pointID).schemesID.insert(scheme.ID);
     }
-  } else if (scheme.type == "HA") {
+  } else if (scheme.type == HOLDING_AREA) {
     flow.checkPoints.at(scheme.startP).schemesID.insert(scheme.ID);
   } else {
     for (const auto pointID : scheme.stFrom) {
@@ -197,7 +197,7 @@ void read_schemes(string_view path) {
     try {
       //Обработка Линейной схемы
       if (regex_match(line.c_str(), res, regLin)) {
-        scheme.type = "L";
+        scheme.type = LINEAR;
         fill_scheme_field(res[1], scheme.lin);
         scheme.startP = scheme.lin.front();
         scheme.endPs.push_back(scheme.lin.back());
@@ -211,7 +211,7 @@ void read_schemes(string_view path) {
         catch (const std::out_of_range &ex) {
           throw std::runtime_error(res[1]);
         }
-        scheme.type = "HA";
+        scheme.type = HOLDING_AREA;
         flow.HAs.insert({scheme.startP, scheme.ID});
         string t_minMU = string(res[3]);
         double t_min = stod(string(res[2]));
@@ -223,7 +223,14 @@ void read_schemes(string_view path) {
       //Обработка схемы типа спрямления
       else if (regex_match(line.c_str(), res, regStr))
       {
-        scheme.type = res[1];
+        if (res[1] == "S") {
+          scheme.type = STRAIGHTENING;
+        } else if (res[1] == "F") {
+          scheme.type = FAN;
+        } else if (res[1] == "T") {
+          scheme.type = TROMBONE;
+        }
+
         fill_scheme_field(res[2], scheme.stFrom);
         fill_scheme_field(res[3], scheme.stTo);
         scheme.startP = scheme.stFrom.front();
@@ -238,7 +245,7 @@ void read_schemes(string_view path) {
         exit(FILE_NOT_ALLOWED_FORMAT);
       }
 
-      if (scheme.type != "HA") {
+      if (scheme.type != HOLDING_AREA) {
         flow.starts[scheme.startP].push_back(scheme.ID);
       }
       cpScheme(scheme);

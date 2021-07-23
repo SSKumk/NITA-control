@@ -27,13 +27,16 @@ struct CheckPoint
 
 Coordinate distance(const CheckPoint &a, const CheckPoint &b);
 
+// Перечислимый тип типа схемы
+enum SchemeType { NONE = -1, LINEAR, HOLDING_AREA, STRAIGHTENING, FAN, TROMBONE };
+
 struct Scheme
 {
     int ID{-1};
     int startP{-1};
     std::vector<int> endPs{};
     
-    std::string type{""}; //Тип схемы: HA - Зона Ожидания, L - линейная, F - веер, T - полутромбон, S - спрямление
+    SchemeType type{NONE}; //Тип схемы: HA - Зона Ожидания, L - линейная, F - веер, T - полутромбон, S - спрямление
     
     std::vector<int> lin{};//Линейная схема
     

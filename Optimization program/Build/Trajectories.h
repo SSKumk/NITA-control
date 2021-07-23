@@ -12,6 +12,8 @@ struct TrajectoryPoint {
   int cpID{-1};
   bool HA{false};
   bool SE{false};
+
+  TrajectoryPoint(int _cpID, bool _HA, bool _SE) : cpID{_cpID}, HA{_HA}, SE{_SE} {}
 };
 
 class BestTrajectory {
@@ -26,6 +28,20 @@ public:
 private:
   std::vector<TrajectoryPoint> curTraj;
   void dfs(int curPointID);
+  void estimateTrajectory();
+
+  // Value of the penalty for trajectory change
+  double Ctr{0};
+
+  // Stack for holding Ctr values for DFS
+  std::vector<double> Ctr_stack{};
+
+  // Stack for the lengths of trajectory
+  std::vector<int> TrLen_stack{};
+
+  // Procedures for making a restore point and restore to the last point
+  void makePoint();
+  void revertPoint();
 };
 
 

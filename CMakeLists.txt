@@ -30,8 +30,6 @@ add_executable(Times-And-Planes-Optimization-2021-07
 
         "Optimization program/Build/Trajectories.h"
         "Optimization program/Build/Trajectories.cpp"
-        )
+        "Optimization program/Build/EstimateTraj.cpp")
 
-target_include_directories(Times-And-Planes-Optimization-2021-07 PUBLIC "$ENV{GUROBI_HOME}/include")
-target_link_directories(Times-And-Planes-Optimization-2021-07 PUBLIC "$ENV{GUROBI_HOME}/lib")
 target_link_libraries(Times-And-Planes-Optimization-2021-07 gurobi_c++ gurobi91)
