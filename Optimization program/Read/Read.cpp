@@ -181,8 +181,8 @@ void read_schemes(string_view path) {
   int lineNum{0};
   string line{};
   cmatch res{};
-  regex regLin(R"(([\w]+\s+[\w\s]+))");
-  regex regStr(R"(\[(F|T|S)\]\s*StrFrom\(([\w\s]+)\)\s*StrTo\(([\w\s]+)\))");
+  regex regLin(R"((\+?)\s*([\w]+\s+[\w\s]+))");
+  regex regStr(R"((\+?)\s*\[(F|T|S)\]\s*StrFrom\(([\w\s]+)\)\s*StrTo\(([\w\s]+)\))");
   regex regHA(R"((\w+)\s*:\s*([0-9]*\.?[0-9]+)(s|min|h)\s*([0-9]*\.?[0-9]+)(s|min|h)\s*)");
   while (getline(file, line)) {
     lineNum++;
@@ -198,7 +198,7 @@ void read_schemes(string_view path) {
       //Обработка Линейной схемы
       if (regex_match(line.c_str(), res, regLin)) {
         scheme.type = LINEAR;
-        fill_scheme_field(res[1], scheme.lin);
+        fill_scheme_field(res[2], scheme.lin);
         scheme.startP = scheme.lin.front();
         scheme.endPs.push_back(scheme.lin.back());
       }
@@ -223,16 +223,16 @@ void read_schemes(string_view path) {
       //Обработка схемы типа спрямления
       else if (regex_match(line.c_str(), res, regStr))
       {
-        if (res[1] == "S") {
+        if (res[2] == "S") {
           scheme.type = STRAIGHTENING;
-        } else if (res[1] == "F") {
+        } else if (res[2] == "F") {
           scheme.type = FAN;
-        } else if (res[1] == "T") {
+        } else if (res[2] == "T") {
           scheme.type = TROMBONE;
         }
 
-        fill_scheme_field(res[2], scheme.stFrom);
-        fill_scheme_field(res[3], scheme.stTo);
+        fill_scheme_field(res[3], scheme.stFrom);
+        fill_scheme_field(res[4], scheme.stTo);
         scheme.startP = scheme.stFrom.front();
         copy(scheme.stTo.begin(), scheme.stTo.end(), back_inserter(scheme.endPs));
 
@@ -245,7 +245,11 @@ void read_schemes(string_view path) {
         exit(FILE_NOT_ALLOWED_FORMAT);
       }
 
+      // Обработка флага дополнительного взаимодействия
+      // и занесение схемы в списки ее начальной точки
       if (scheme.type != HOLDING_AREA) {
+        scheme.needInteract = res[1] == "+";
+
         flow.starts[scheme.startP].push_back(scheme.ID);
       }
       cpScheme(scheme);

@@ -35,6 +35,7 @@ struct Scheme
     int ID{-1};
     int startP{-1};
     std::vector<int> endPs{};
+    bool needInteract{false};
     
     SchemeType type{NONE}; //Тип схемы: HA - Зона Ожидания, L - линейная, F - веер, T - полутромбон, S - спрямление
     
