@@ -182,7 +182,7 @@ void read_schemes(string_view path) {
   string line{};
   cmatch res{};
   regex regLin(R"(([\w]+\s+[\w\s]+))");
-  regex regStr(R"(\[(F|T|S)\]StrFrom\(([\w\s]+)\)\s*StrTo\(([\w\s]+)\))");
+  regex regStr(R"(\[(F|T|S)\]\s*StrFrom\(([\w\s]+)\)\s*StrTo\(([\w\s]+)\))");
   regex regHA(R"((\w+)\s*:\s*([0-9]*\.?[0-9]+)(s|min|h)\s*([0-9]*\.?[0-9]+)(s|min|h)\s*)");
   while (getline(file, line)) {
     lineNum++;

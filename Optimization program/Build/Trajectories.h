@@ -9,16 +9,17 @@
 #include <string>
 
 struct TrajectoryPoint {
-  int cpID{-1};
-  bool HA{false};
-  bool SE{false};
+  int cpID;
+  bool HA;
+  bool SE;
 
+  TrajectoryPoint()  : cpID{-1}, HA{false}, SE{false} {}
   TrajectoryPoint(int _cpID, bool _HA, bool _SE) : cpID{_cpID}, HA{_HA}, SE{_SE} {}
 };
 
 class BestTrajectory {
 public:
-  std::vector<TrajectoryPoint> traj;
+  std::vector<TrajectoryPoint> traj{};
   double t0;
   double v0;
   double tf;
