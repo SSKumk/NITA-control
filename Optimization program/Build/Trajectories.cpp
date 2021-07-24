@@ -42,6 +42,12 @@ void BestTrajectory::dfs(int curPointID) {
       bool useHA = false;
       map<int, int>::iterator HA = flow.HAs.end();
 
+      // Taking into account the additional interaction
+      // for entering the scheme
+      if (scheme.needInteract) {
+        Ctr += 1;
+      }
+
       // Loop over HOLDING_AREA at the start point
       do {
         // Process the scheme
@@ -153,6 +159,12 @@ void BestTrajectory::dfs(int curPointID) {
         }
         // End of the loop over HOLDING_AREA at the start point
       } while (useHA && HA != flow.HAs.end());
+
+      // Reverting the additional interaction
+      // for entering the scheme
+      if (scheme.needInteract) {
+        Ctr -= 1;
+      }
 
       // End of the loop over schemes starting at the point
     }
