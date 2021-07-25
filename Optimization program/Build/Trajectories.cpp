@@ -5,9 +5,11 @@
 #include "Trajectories.h"
 #include "Optimization program/Flow.h"
 
+#include <iostream>
+
 using namespace std;
 
-BestTrajectory::BestTrajectory(string _P0, double _t0, double _v0, double _tf) :
+BestTrajectory::BestTrajectory(string _P0, const Time &_t0, const Velocity &_v0, const Time &_tf) :
         t0{_t0}, v0{_v0}, tf{_tf} {
   traj.clear();
 
@@ -32,7 +34,10 @@ void BestTrajectory::revertPoint() {
 void BestTrajectory::dfs(int curPointID) {
   if (curPointID == flow.final_point) {
     // We have reached the final point - estimate it and correct the optimum if necessary
+    makePoint();
+    traj.push_back(TrajectoryPoint(curPointID, false, false));
     estimateTrajectory();
+    revertPoint();
   } else {
     // Have to go further
 
@@ -54,10 +59,17 @@ void BestTrajectory::dfs(int curPointID) {
         switch (scheme.type) {
           // Linear segment - just add points to the trajectory
           case LINEAR:
-            for (int i = 0; i < scheme.lin.size(); i++) {
+            makePoint();
+
+            if (useHA) {
+              Ctr += 1;
+            }
+
+            for (int i = 0; i < scheme.lin.size()-1; i++) {
               traj.push_back(TrajectoryPoint(scheme.lin[i], i == 0 && useHA, false));
             }
             dfs(scheme.lin.back());
+            revertPoint();
             break;
 
             // Case of a straightening segment
@@ -71,6 +83,10 @@ void BestTrajectory::dfs(int curPointID) {
             if (!straightToFinalPoint) {
               makePoint();
 
+              if (useHA) {
+                Ctr += 1;
+              }
+
               // Учитываем взаимодествия
               switch (scheme.type) {
                 case FAN:
@@ -81,7 +97,7 @@ void BestTrajectory::dfs(int curPointID) {
                   break;
               }
 
-              for (int i = 0; i < scheme.stFrom.size(); i++) {
+              for (int i = 0; i < scheme.stFrom.size()-1; i++) {
                 traj.push_back(TrajectoryPoint(scheme.stFrom[i], i == 0 && useHA, false));
               }
 
@@ -92,6 +108,10 @@ void BestTrajectory::dfs(int curPointID) {
             // Для тромбона и веера обрабатываем траекторию, которая проходит напрямую мимо дуги ожидания
             if (scheme.type != STRAIGHTENING) {
               makePoint();
+
+              if (useHA) {
+                Ctr += 1;
+              }
 
               // Учитываем взаимодествия
               if (scheme.type == FAN) {
@@ -104,7 +124,7 @@ void BestTrajectory::dfs(int curPointID) {
               if (straightToFinalPoint) {
                 traj.push_back(TrajectoryPoint(scheme.stFrom[scheme.stFrom.size() - 2], false, false));
               }
-              traj.push_back(TrajectoryPoint(scheme.stFrom.back(), false, false));
+              //traj.push_back(TrajectoryPoint(scheme.stFrom.back(), false, false));
 
               dfs(scheme.stFrom.back());
               revertPoint();
@@ -126,6 +146,10 @@ void BestTrajectory::dfs(int curPointID) {
 
                 makePoint();
 
+                if (useHA) {
+                  Ctr += 1;
+                }
+
                 // Считаем взаимодействия
                 switch(scheme.type){
                   case STRAIGHTENING:
@@ -143,7 +167,7 @@ void BestTrajectory::dfs(int curPointID) {
                 for (int i = 0; i <= fromNum; i++) {
                   traj.push_back(TrajectoryPoint(scheme.stFrom[i], i == 0 && useHA, i == fromNum));
                 }
-                traj.push_back(TrajectoryPoint(toInd, false, false));
+                //traj.push_back(TrajectoryPoint(toInd, false, false));
 
                 dfs(toInd);
                 revertPoint();
@@ -167,6 +191,20 @@ void BestTrajectory::dfs(int curPointID) {
       }
 
       // End of the loop over schemes starting at the point
+    }
+  }
+}
+
+void BestTrajectory::PrintCurrentTrajectory() {
+  cout << "Ctr = " << Ctr << ";";
+  for (TrajectoryPoint p : traj) {
+    cout << " " << flow.checkPoints[p.cpID].name;
+    if (p.HA && p.SE) {
+      cout << "(HA,SE)";
+    } else if (p.HA) {
+      cout << "(HA)";
+    } else if (p.SE) {
+      cout << "(SE)";
     }
   }
 }

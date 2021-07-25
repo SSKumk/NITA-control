@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <iostream>
+
 #include "Optimization program/Measure units/Measure units.h"
 #include "cmath"
 
@@ -29,6 +31,7 @@ Coordinate distance(const CheckPoint &a, const CheckPoint &b);
 
 // Перечислимый тип типа схемы
 enum SchemeType { NONE = -1, LINEAR, HOLDING_AREA, STRAIGHTENING, FAN, TROMBONE };
+std::ostream& operator<<(std::ostream& os, const SchemeType& t);
 
 struct Scheme
 {

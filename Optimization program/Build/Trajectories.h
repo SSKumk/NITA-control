@@ -8,6 +8,8 @@
 #include <vector>
 #include <string>
 
+#include "Optimization program/Measure units/Measure units.h"
+
 struct TrajectoryPoint {
   int cpID;
   bool HA;
@@ -20,11 +22,13 @@ struct TrajectoryPoint {
 class BestTrajectory {
 public:
   std::vector<TrajectoryPoint> traj{};
-  double t0;
-  double v0;
-  double tf;
+  Time t0;
+  Velocity v0;
+  Time tf;
 
-  BestTrajectory(std::string _P0, double _t0, double _v0, double _tf);
+  BestTrajectory(std::string _P0, const Time &_t0, const Velocity &_v0, const Time &_tf);
+
+  void PrintCurrentTrajectory();
 
 private:
   std::vector<TrajectoryPoint> curTraj;

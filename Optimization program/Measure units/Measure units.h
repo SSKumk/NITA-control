@@ -23,6 +23,7 @@ struct Coordinate
             assert(false &&
                    "Check the correctness of the entered units of measurement: it should be --> 'm' - meters, 'km' - kilometers, 'NM' - naval miles");
     };
+    Coordinate(const Coordinate &_c) : meter{_c.meter} {}
     
     double m() const
     { return meter; }
@@ -57,6 +58,7 @@ struct Velocity
             assert(false &&
                    "Check the correctness of the entered units of measurement: it should be --> 'm_s' - meters per second, 'km_h' - kilometers per hour, 'NM_h' - naval miles per hour");
     };
+    Velocity (const Velocity &_v) : meters_per_second{_v.meters_per_second} {}
 
     double km_h() const;
     double m_s() const;
@@ -84,6 +86,7 @@ struct Time
             assert(false &&
                    "Check the correctness of the entered units of measurement: it should be --> 's' - seconds, 'min' - minutes, 'h' - hours");
     };
+    Time (const Time &_t) : seconds{_t.seconds} {}
     
     double s() const;
     

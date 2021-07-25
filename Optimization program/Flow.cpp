@@ -2,6 +2,8 @@
 // Created by Антон on 07.07.2021.
 //
 #include <iostream>
+#include <iomanip>
+
 #include "Flow.h"
 
 using namespace std;
@@ -16,14 +18,17 @@ Flow &Flow::get_instance() {
 Flow flow = Flow::get_instance();
 
 void print_schemes_flow() {
-  cout << "ID \t" << "Type \t" << "Start\t" << "End" << endl << endl;
+  cout
+    << left << setw(8) << "ID"
+    << left << setw(8) << "Type"
+    << left << setw(8) << "Start"
+    << left << setw(8) << "End"
+    << endl;
   for (const auto &scheme : flow.schemes) {
-    cout << scheme.ID
-         << "\t"
-         << scheme.type
-         << "\t"
-         << flow.checkPoints.at(scheme.startP).name
-         << "\t";
+    cout
+      << left << setw(8) << scheme.ID
+      << left << setw(8) << scheme.type
+      << left << setw(8) << flow.checkPoints.at(scheme.startP).name;
     for (int ID : scheme.endPs) {
       cout << flow.checkPoints.at(ID).name << ' ';
     }

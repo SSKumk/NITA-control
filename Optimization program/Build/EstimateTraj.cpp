@@ -7,7 +7,11 @@
 
 #include "gurobi_c++.h"
 
+#include <iostream>
+
 using namespace std;
 
 void BestTrajectory::estimateTrajectory() {
+  PrintCurrentTrajectory();
+  cout << endl;
 }
