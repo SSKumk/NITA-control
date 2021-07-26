@@ -1,0 +1,4 @@
+# Веер
+
+P0: 4min 30min
+[F] StrFrom(P0 P1 P2 P3) StrTo(P4)

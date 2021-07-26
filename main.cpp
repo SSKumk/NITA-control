@@ -10,8 +10,8 @@ int main() {
   string path_to_SchemesFile = "../Optimization program/Source information/Schemes/Flow-Test-Schemes.txt";
 */
 
-  string path_to_CPointsFile = "../Optimization program/Source information/Points/Test02.txt";
-  string path_to_SchemesFile = "../Optimization program/Source information/Schemes/Test02.txt";
+  string path_to_CPointsFile = "../Optimization program/Source information/Points/Test07.txt";
+  string path_to_SchemesFile = "../Optimization program/Source information/Schemes/Test07.txt";
 
 
   build_Flow(path_to_CPointsFile, path_to_SchemesFile, 0);

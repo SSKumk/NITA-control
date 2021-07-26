@@ -1,0 +1,4 @@
+# Тромбон
+
+P0: 4min 30min
+[T] StrFrom(P0 P1 P2 P3) StrTo(P3)

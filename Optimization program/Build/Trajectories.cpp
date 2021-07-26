@@ -106,7 +106,7 @@ void BestTrajectory::dfs(int curPointID) {
             }
 
             // Для тромбона и веера обрабатываем траекторию, которая проходит напрямую мимо дуги ожидания
-            if (scheme.type != STRAIGHTENING) {
+            if (scheme.type == TROMBONE || scheme.type == FAN) {
               makePoint();
 
               if (useHA) {
@@ -125,6 +125,27 @@ void BestTrajectory::dfs(int curPointID) {
                 traj.push_back(TrajectoryPoint(scheme.stFrom[scheme.stFrom.size() - 2], false, false));
               }
               //traj.push_back(TrajectoryPoint(scheme.stFrom.back(), false, false));
+
+              dfs(scheme.stFrom.back());
+              revertPoint();
+            }
+
+            // Для участка спрямления и тромбона генерируем траекторию,
+            // проходящую по всей схеме без спрямления
+            if (scheme.type == STRAIGHTENING || scheme.type == TROMBONE) {
+              makePoint();
+
+              // Считаем взаимодействия
+              if (useHA) {
+                Ctr += 1;
+              }
+              if (scheme.type == TROMBONE) {
+                Ctr += 1;
+              }
+
+              for (int i = 0; i < scheme.stFrom.size() - 1; i++) {
+                traj.push_back(TrajectoryPoint(scheme.stFrom[i], i == 0 && useHA, false));
+              }
 
               dfs(scheme.stFrom.back());
               revertPoint();
