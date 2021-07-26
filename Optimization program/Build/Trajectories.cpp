@@ -105,8 +105,23 @@ void BestTrajectory::dfs(int curPointID) {
               revertPoint();
             }
 
-            // Для тромбона и веера обрабатываем траекторию, которая проходит напрямую мимо дуги ожидания
-            if (scheme.type == TROMBONE || scheme.type == FAN) {
+            // Для тромбона обрабатываем траекторию, которая проходит напрямую мимо дуги ожидания
+            if (scheme.type == TROMBONE) {
+              makePoint();
+
+              if (useHA) {
+                Ctr += 1;
+              }
+
+              traj.push_back(TrajectoryPoint(scheme.stFrom.front(), useHA, false));
+              traj.push_back(TrajectoryPoint(scheme.stFrom[scheme.stFrom.size() - 2], false, false));
+
+              dfs(scheme.stFrom.back());
+              revertPoint();
+            }
+
+            // Для веера обрабатываем траекторию, которая проходит напрямую мимо дуги ожидания
+            if (scheme.type == FAN) {
               makePoint();
 
               if (useHA) {
@@ -114,19 +129,11 @@ void BestTrajectory::dfs(int curPointID) {
               }
 
               // Учитываем взаимодествия
-              if (scheme.type == FAN) {
-                Ctr += 1;
-              }
+              Ctr += 1;
 
               traj.push_back(TrajectoryPoint(scheme.stFrom.front(), useHA, false));
-              // Если финальная точка - это точка на которую спрямляемся,
-              // то нужно занести в траекторию предпоследнюю точку
-              if (straightToFinalPoint) {
-                traj.push_back(TrajectoryPoint(scheme.stFrom[scheme.stFrom.size() - 2], false, false));
-              }
-              //traj.push_back(TrajectoryPoint(scheme.stFrom.back(), false, false));
 
-              dfs(scheme.stFrom.back());
+              dfs(scheme.stTo.front());
               revertPoint();
             }
 
@@ -188,7 +195,6 @@ void BestTrajectory::dfs(int curPointID) {
                 for (int i = 0; i <= fromNum; i++) {
                   traj.push_back(TrajectoryPoint(scheme.stFrom[i], i == 0 && useHA, i == fromNum));
                 }
-                //traj.push_back(TrajectoryPoint(toInd, false, false));
 
                 dfs(toInd);
                 revertPoint();

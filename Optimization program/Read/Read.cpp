@@ -239,6 +239,68 @@ void read_schemes(string_view path) {
         if (find(scheme.stTo.begin(), scheme.stTo.end(), scheme.stFrom.back()) == scheme.stTo.end()) {
           scheme.endPs.push_back(scheme.stFrom.back());
         }
+
+        // Correctness check
+        switch(scheme.type) {
+          case STRAIGHTENING:
+            if (scheme.stFrom.size() < 2) {
+              cerr << "Straightening scheme in line " << lineNum << " has too short StrFrom section!" << endl;
+              exit(WRONG_STRFROM_SECTION);
+            }
+            if (scheme.stTo.size() < 1) {
+              cerr << "Straightening scheme in line " << lineNum << " has too short StrTo section!" << endl;
+              exit(WRONG_STRTO_SECTION);
+            }
+            for (int i = 0; i < scheme.stFrom.size() - 1; i++) {
+              if (find(scheme.stTo.begin(), scheme.stTo.end(), scheme.stFrom[i])
+                     != scheme.stTo.end()) {
+                cerr << "Straightening scheme in line " << lineNum << " has the straightening point " <<
+                  flow.checkPoints[scheme.stFrom[i]].name <<
+                  " as a non-final point in the straightening fragment!" << endl;
+                exit(WRONG_STR_POINT);
+              }
+            }
+
+          case FAN:
+            if (scheme.stFrom.size() < 2) {
+              cerr << "Fan scheme in line " << lineNum << " has too short StrFrom section!" << endl;
+              exit(WRONG_STRFROM_SECTION);
+            }
+            if (scheme.stTo.size() != 1) {
+              cerr << "Fan scheme in line " << lineNum << " has StrTo section consisting not of one point!" << endl;
+              exit(WRONG_STRTO_SECTION);
+            }
+            if (find(scheme.stFrom.begin(), scheme.stFrom.end(), scheme.stTo[0])
+                != scheme.stFrom.end()) {
+              cerr << "Fan scheme in line " << lineNum << " has the straightening point " <<
+                   flow.checkPoints[scheme.stTo[0]].name <<
+                   " in the straightening fragment!" << endl;
+              exit(WRONG_STR_POINT);
+            }
+
+          case TROMBONE:
+            if (scheme.stFrom.size() < 3) {
+              cerr << "Trombone scheme in line " << lineNum << " has too short StrFrom section!" << endl;
+              exit(WRONG_STRFROM_SECTION);
+            }
+            if (scheme.stTo.size() != 1) {
+              cerr << "Trombone scheme in line " << lineNum << " has StrTo section consisting not of one point!" << endl;
+              exit(WRONG_STRTO_SECTION);
+            }
+            if (scheme.stFrom.back() != scheme.stTo.front()) {
+              cerr << "Trombone scheme in line " << lineNum << " has the last point in the straightening segment "
+                << "differing from the straightening point!" << endl;
+              exit(WRONG_STR_POINT);
+            }
+            for (int i = 0; i < scheme.stFrom.size() - 1; i++) {
+              if (scheme.stFrom[i] == scheme.stTo.front()) {
+                cerr << "Trombone scheme in line " << lineNum << " has the straightening point " <<
+                     flow.checkPoints[scheme.stFrom[i]].name <<
+                     " as a non-final point in the straightening fragment!" << endl;
+                exit(WRONG_STR_POINT);
+              }
+            }
+        }
       }
       else {
         cerr << "Warning! Line '" << lineNum << "' in " << path << " doesn't match any scheme format" << endl;
