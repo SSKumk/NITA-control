@@ -21,7 +21,10 @@ struct TrajectoryPoint {
 
 class BestTrajectory {
 public:
-  std::vector<TrajectoryPoint> traj{};
+  std::vector<TrajectoryPoint> bestTraj{};
+  double bestValue{1e38};
+  double bestCtr{1e38};
+
   Time t0;
   Velocity v0;
   Time tf;
@@ -31,7 +34,8 @@ public:
   void PrintCurrentTrajectory();
 
 private:
-  std::vector<TrajectoryPoint> curTraj;
+  std::vector<TrajectoryPoint> traj{};
+
   void dfs(int curPointID);
   void estimateTrajectory();
 

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+void i2s(int n, int l, std::string &s);
 std::vector<std::string> splitStringBySeparator(const std::string &_str, char _delim);
 
 #endif //TIMES_AND_PLANES_OPTIMIZATION_2021_07_TOOLS_H
