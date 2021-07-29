@@ -260,6 +260,7 @@ void read_schemes(string_view path) {
                 exit(WRONG_STR_POINT);
               }
             }
+            break;
 
           case FAN:
             if (scheme.stFrom.size() < 2) {
@@ -277,6 +278,7 @@ void read_schemes(string_view path) {
                    " in the straightening fragment!" << endl;
               exit(WRONG_STR_POINT);
             }
+            break;
 
           case TROMBONE:
             if (scheme.stFrom.size() < 3) {
@@ -300,6 +302,7 @@ void read_schemes(string_view path) {
                 exit(WRONG_STR_POINT);
               }
             }
+            break;
         }
       }
       else {

@@ -17,7 +17,9 @@ int main() {
   build_Flow(path_to_CPointsFile, path_to_SchemesFile, 0);
   print_schemes_flow();
 
-  BestTrajectory bt("P0", Time(0.0, "s"), Velocity(400.0, "km_h"), Time(13000.0, "s"));
+  BestTrajectory bt("P0", Time(0.0, "s"), Velocity(400.0, "km_h"), Time(3600.0, "s"));
+
+  bt.PrintBestTrajectory();
 
   return 0;
 }

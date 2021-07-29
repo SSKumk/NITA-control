@@ -10,6 +10,8 @@
 
 #include "Optimization program/Measure units/Measure units.h"
 
+#include "gurobi_c++.h"
+
 struct TrajectoryPoint {
   int cpID;
   bool HA;
@@ -19,9 +21,18 @@ struct TrajectoryPoint {
   TrajectoryPoint(int _cpID, bool _HA, bool _SE) : cpID{_cpID}, HA{_HA}, SE{_SE} {}
 };
 
+struct AddVars {
+  GRBVar tIn;
+  GRBVar tOut;
+  GRBVar v;
+  GRBVar S;
+  GRBVar chi;
+};
+
 class BestTrajectory {
 public:
   std::vector<TrajectoryPoint> bestTraj{};
+  std::vector<AddVars> bestVars{};
   double bestValue{1e38};
   double bestCtr{1e38};
 
@@ -55,10 +66,21 @@ private:
   // Procedures for making a restore point and restore to the last point
   void makePoint();
   void revertPoint();
-};
 
   // Internal procedure for trajectory output
   void printTraj(double _Ctr, const std::vector<TrajectoryPoint> _tr);
+
+  // Internal procedure for output of a trajectory with optimization information
+  void printOptTraj(double res, const std::vector<TrajectoryPoint> &traj, const std::vector<AddVars> &vars);
+
+  // Variables for the estimation procedures
+  std::vector<AddVars> vars;
+  GRBModel *model;
+  std::string ind;
+
+  void ImposeVelocityContraints(int predInd, int curInd);
+  void ProcessDirectSegment(int predInd, int curInd, double distMin, double distMax);
+  void ProcessHoldingArea(int predInd, int curInd, double distMin, double distMax);
 };
 
 

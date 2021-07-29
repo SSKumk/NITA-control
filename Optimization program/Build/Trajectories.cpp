@@ -11,9 +11,6 @@ using namespace std;
 
 BestTrajectory::BestTrajectory(string _P0, const Time &_t0, const Velocity &_v0, const Time &_tf) :
         t0{_t0}, v0{_v0}, tf{_tf} {
-  traj.clear();
-
-  curTraj.clear();
   dfs(flow.cpName2cpID[_P0]);
 }
 
@@ -243,5 +240,5 @@ void BestTrajectory::PrintCurrentTrajectory() {
 
 
 void BestTrajectory::PrintBestTrajectory() {
-  printTraj(bestCtr, bestTraj);
+  printOptTraj(bestCtr, bestTraj, bestVars);
 }
