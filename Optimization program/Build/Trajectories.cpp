@@ -240,5 +240,5 @@ void BestTrajectory::PrintCurrentTrajectory() {
 
 
 void BestTrajectory::PrintBestTrajectory() {
-  printOptTraj(bestCtr, bestTraj, bestVars);
+  printOptTraj(bestCtr, bestTraj);
 }

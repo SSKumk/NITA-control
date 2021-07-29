@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <string>
+#include <limits>
 
 #include "Optimization program/Measure units/Measure units.h"
 
@@ -16,6 +17,12 @@ struct TrajectoryPoint {
   int cpID;
   bool HA;
   bool SE;
+
+  double tIn{std::numeric_limits<double>::min()};
+  double tOut{std::numeric_limits<double>::min()};
+  double S{std::numeric_limits<double>::min()};
+  double v{std::numeric_limits<double>::min()};
+  int chi{std::numeric_limits<int>::min()};
 
   TrajectoryPoint()  : cpID{-1}, HA{false}, SE{false} {}
   TrajectoryPoint(int _cpID, bool _HA, bool _SE) : cpID{_cpID}, HA{_HA}, SE{_SE} {}
@@ -32,7 +39,6 @@ struct AddVars {
 class BestTrajectory {
 public:
   std::vector<TrajectoryPoint> bestTraj{};
-  std::vector<AddVars> bestVars{};
   double bestValue{1e38};
   double bestCtr{1e38};
 
@@ -68,10 +74,10 @@ private:
   void revertPoint();
 
   // Internal procedure for trajectory output
-  void printTraj(double _Ctr, const std::vector<TrajectoryPoint> _tr);
+  static void printTraj(double _Ctr, const std::vector<TrajectoryPoint> _tr);
 
   // Internal procedure for output of a trajectory with optimization information
-  void printOptTraj(double res, const std::vector<TrajectoryPoint> &traj, const std::vector<AddVars> &vars);
+  void printOptTraj(double res, const std::vector<TrajectoryPoint> &traj);
 
   // Variables for the estimation procedures
   std::vector<AddVars> vars;

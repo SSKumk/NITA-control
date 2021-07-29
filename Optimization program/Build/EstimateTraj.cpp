@@ -29,8 +29,7 @@ void BestTrajectory::ProcessDirectSegment(int predInd, int curInd, double distMi
   if (curInd == 0) {
     vars[curInd].tOut = model->addVar(t0.s(), t0.s(), 0, GRB_CONTINUOUS, "t" + ind);
     vars[curInd].v = model->addVar(v0.m_s(), v0.m_s(), 0, GRB_CONTINUOUS, "v" + ind);
-  }
-  else {
+  } else {
     vars[curInd].tOut = model->addVar(-GRB_INFINITY, +GRB_INFINITY, 0, GRB_CONTINUOUS, "t" + ind);
 
     vars[curInd].S = model->addVar(distMin, distMax, 0, GRB_CONTINUOUS, "S" + ind);
@@ -44,8 +43,7 @@ void BestTrajectory::ProcessHoldingArea(int predInd, int curInd, double distMin,
   if (curInd == 0) {
     vars[curInd].tIn = model->addVar(t0.s(), t0.s(), 0, GRB_CONTINUOUS, "t'" + ind);
     vars[curInd].v = model->addVar(v0.m_s(), v0.m_s(), 0, GRB_CONTINUOUS, "v" + ind);
-  }
-  else {
+  } else {
     vars[curInd].tIn = model->addVar(-GRB_INFINITY, +GRB_INFINITY, 0, GRB_CONTINUOUS, "t'" + ind);
 
     vars[curInd].S = model->addVar(distMin, distMax, 0, GRB_CONTINUOUS, "S" + ind);
@@ -63,6 +61,7 @@ void BestTrajectory::ProcessHoldingArea(int predInd, int curInd, double distMin,
 
 
 void BestTrajectory::estimateTrajectory() {
+  cout << "-----------------------------------" << endl;
   cout << "Trajectory to be estimated: ";
   PrintCurrentTrajectory();
   cout << endl;
@@ -70,7 +69,9 @@ void BestTrajectory::estimateTrajectory() {
   vars.clear();
   vars.resize(traj.size());
 
+  double res;
   try {
+    res = 1e38;
     model = new GRBModel(*env);
 
     int i = 0;
@@ -102,9 +103,9 @@ void BestTrajectory::estimateTrajectory() {
         ind = "_" + ind;
 
         double
-          distMin = distance(flow.checkPoints[traj[i - 1].cpID], flow.checkPoints[traj[i + 1].cpID]).m(),
-          distMax = distance(flow.checkPoints[traj[i - 1].cpID], flow.checkPoints[traj[i].cpID]).m() +
-                    distance(flow.checkPoints[traj[i].cpID], flow.checkPoints[traj[i + 1].cpID]).m();
+                distMin = distance(flow.checkPoints[traj[i - 1].cpID], flow.checkPoints[traj[i + 1].cpID]).m(),
+                distMax = distance(flow.checkPoints[traj[i - 1].cpID], flow.checkPoints[traj[i].cpID]).m() +
+                          distance(flow.checkPoints[traj[i].cpID], flow.checkPoints[traj[i + 1].cpID]).m();
 
         // Adding velocity constraints
         ImposeVelocityContraints(i - 1, i + 1);
@@ -129,6 +130,30 @@ void BestTrajectory::estimateTrajectory() {
     model->set(GRB_IntParam_NonConvex, 2);
     model->set(GRB_DoubleAttr_ObjCon, Ctr);
     model->optimize();
+
+    if (model->get(GRB_IntAttr_Status) == GRB_OPTIMAL) {
+      res = model->get(GRB_DoubleAttr_ObjVal);
+
+      for (int i = 0; i < traj.size(); i++) {
+        if (!traj[i].SE) {
+          if (traj[i].HA) {
+            traj[i].tIn = vars[i].tIn.get(GRB_DoubleAttr_X);
+          }
+          traj[i].tOut = vars[i].tOut.get(GRB_DoubleAttr_X);
+          traj[i].v = vars[i].v.get(GRB_DoubleAttr_X);
+          if (i > 0) {
+            traj[i].chi = static_cast<int>(vars[i].chi.get(GRB_DoubleAttr_X));
+            traj[i].S = vars[i].S.get(GRB_DoubleAttr_X);
+          }
+        }
+      }
+      printOptTraj(res, traj);
+    } else {
+      cout << "*** No optimal solution has been found!" << endl;
+    }
+
+    delete model;
+    model = NULL;
   } catch (GRBException e) {
     cout << "Error code = " << e.getErrorCode() << endl;
     cout << e.getMessage() << endl;
@@ -136,44 +161,34 @@ void BestTrajectory::estimateTrajectory() {
     cout << "Exception during optimization" << endl;
   }
 
-  if (model != NULL) {
-    if (model->get(GRB_IntAttr_Status) == GRB_OPTIMAL) {
-      double res = model->get(GRB_DoubleAttr_ObjVal);
-
-      printOptTraj(res, traj, vars);
-
-      if (res < bestValue) {
-        bestValue = res;
-        bestCtr = Ctr;
-        bestTraj = traj;
-        bestVars = vars;
-      }
-    }
-    else {
-      cout << "*** No optimal solution has been found!" << endl;
-    }
-
-    delete model;
-    model = NULL;
+  if (res < bestValue) {
+    bestValue = res;
+    bestCtr = Ctr;
+    bestTraj = traj;
   }
 }
 
 
-void BestTrajectory::printOptTraj(double res, const vector<TrajectoryPoint> &traj, const vector<AddVars> &vars) {
+void BestTrajectory::printOptTraj(double res, const vector<TrajectoryPoint> &traj) {
   cout << "Objective value = " << res << endl;
   for (int i = 0; i < traj.size(); i++) {
     if (!traj[i].SE) {
       if (i == 0) {
         cout << flow.checkPoints[traj[i].cpID].name << ": " <<
-             "v = " << vars[i].v.get(GRB_DoubleAttr_X) << ", " <<
-             "t = " << vars[i].tOut.get(GRB_DoubleAttr_X) << ", " << endl;
-      }
-      else {
+             "v = " << traj[i].v << ", ";
+        if (traj[i].HA) {
+          cout << "HA: t' = " << traj[i].tIn << ", ";
+        }
+        cout << "t = " << traj[i].tOut << endl;
+      } else {
         cout << flow.checkPoints[traj[i].cpID].name << ": " <<
-             "chi = " << vars[i].chi.get(GRB_DoubleAttr_X) << ", " <<
-             "v = " << vars[i].v.get(GRB_DoubleAttr_X) << ", " <<
-             "t = " << vars[i].tOut.get(GRB_DoubleAttr_X) << ", " <<
-             "S = " << vars[i].S.get(GRB_DoubleAttr_X) << endl;
+             "chi = " << traj[i].chi << ", " <<
+             "v = " << traj[i].v << ", ";
+        if (traj[i].HA) {
+          cout << "HA: t' = " << traj[i].tIn << ", ";
+        }
+        cout << "t = " << traj[i].tOut << ", " <<
+             "S = " << traj[i].S << endl;
       }
     }
   }
