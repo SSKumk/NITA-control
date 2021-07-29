@@ -33,6 +33,10 @@ public:
 
   void PrintCurrentTrajectory();
 
+  void PrintBestTrajectory();
+
+  double getCtr() { return Ctr; }
+
 private:
   std::vector<TrajectoryPoint> traj{};
 
@@ -53,6 +57,9 @@ private:
   void revertPoint();
 };
 
+  // Internal procedure for trajectory output
+  void printTraj(double _Ctr, const std::vector<TrajectoryPoint> _tr);
+};
 
 
 #endif //TIMES_AND_PLANES_OPTIMIZATION_2021_07_TRAJECTORIES_H

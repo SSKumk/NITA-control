@@ -222,9 +222,9 @@ void BestTrajectory::dfs(int curPointID) {
   }
 }
 
-void BestTrajectory::PrintCurrentTrajectory() {
-  cout << "Ctr = " << Ctr << ";";
-  for (TrajectoryPoint p : traj) {
+void BestTrajectory::printTraj(double _Ctr, const std::vector<TrajectoryPoint> _tr) {
+  cout << "Ctr = " << _Ctr << ";";
+  for (TrajectoryPoint p : _tr) {
     cout << " " << flow.checkPoints[p.cpID].name;
     if (p.HA && p.SE) {
       cout << "(HA,SE)";
@@ -236,3 +236,12 @@ void BestTrajectory::PrintCurrentTrajectory() {
   }
 }
 
+
+void BestTrajectory::PrintCurrentTrajectory() {
+  printTraj(Ctr, traj);
+}
+
+
+void BestTrajectory::PrintBestTrajectory() {
+  printTraj(bestCtr, bestTraj);
+}

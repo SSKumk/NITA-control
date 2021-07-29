@@ -24,6 +24,7 @@ struct AddVars {
 GRBEnv *env = new GRBEnv();
 
 void BestTrajectory::estimateTrajectory() {
+  cout << "Trajectory to be estimated: ";
   PrintCurrentTrajectory();
   cout << endl;
 
