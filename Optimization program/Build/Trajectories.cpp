@@ -84,14 +84,11 @@ void BestTrajectory::dfs(int curPointID) {
                 Ctr += 1;
               }
 
-              // Учитываем взаимодествия
-              switch (scheme.type) {
-                case FAN:
-                  Ctr += 2;
-                  break;
-                case TROMBONE:
-                  Ctr += 1;
-                  break;
+              // Учитываем взаимодействия
+              // Для веера взаимодействия нет: заход на веер без взаимодействия,
+              // а сход на следующую схему с конца дуги ожидания будет учтен при обработке той схемы
+              if (scheme.type == TROMBONE) {
+                Ctr += 1;
               }
 
               for (int i = 0; i < scheme.stFrom.size()-1; i++) {
